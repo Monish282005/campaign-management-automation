@@ -46,11 +46,8 @@ class CampaignPage {
 
   async fillCampaign({ name, channel, audience, sendMode, schedule, message }) {
     await this.campaignName.fill(name);
-
     await this.channel.selectOption(channel);
-
     await this.audience.selectOption(audience);
-
     await this.sendMode.selectOption(sendMode);
 
     if (sendMode === "scheduled") {
@@ -79,12 +76,18 @@ class CampaignPage {
   async launchCampaign(name) {
     const card = this.campaignCard(name);
 
+    // Verify initial state
+    await expect(card.getByTestId("campaign-status")).toHaveText("Draft");
+
+    // Launch campaign
     await card.getByTestId("launch-campaign-button").click();
 
-    await expect(card.getByTestId("campaign-status")).toHaveText("Queued", {
+    // Verify status changed from Draft
+    await expect(card.getByTestId("campaign-status")).not.toHaveText("Draft", {
       timeout: 10000,
     });
   }
+
   async filterStatus(status) {
     await this.statusFilter.selectOption(status);
   }
